@@ -233,7 +233,7 @@ public final class VotePlugin extends JavaPlugin {
                 cb.append("[ ]").color(ChatColor.GRAY);
             }
             cb.append(" ");
-            cb.append(colorize(service.displayName)).color(ChatColor.BLUE);
+            cb.append(colorize(service.displayName)).color(ChatColor.YELLOW);
             if (!has) {
                 BaseComponent[] tooltip = TextComponent
                     .fromLegacyText("" + ChatColor.BLUE
