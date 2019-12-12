@@ -14,7 +14,7 @@ import lombok.Setter;
 public final class SQLLog {
     @Id
     Integer id;
-    @Column(nullable = false, length = 16)
+    @Column(nullable = false, length = 255)
     String user;
     @Column(nullable = true)
     UUID userId;
