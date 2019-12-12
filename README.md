@@ -1,0 +1,3 @@
+# Vote
+
+Vote plugin.

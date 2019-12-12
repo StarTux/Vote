@@ -1,0 +1,39 @@
+main: com.cavetale.vote.VotePlugin
+name: Vote
+version: 0.1
+api-version: 1.13
+description: Vote Plugin
+author: StarTux
+website: https://cavetale.com
+depend: [SQL, GenericEvents, WorldMarker]
+softdepend: []
+commands:
+  vote:
+    aliases: [v]
+    description: Vote Command
+    permission: vote.vote
+    usage: |-
+      /vote - General information
+      /vote hi - Monthly highscore
+  voteadmin:
+    aliases: [voteadm]
+    description: Vote Command
+    permission: vote.admin
+    usage: |-
+      /voteadm reload - Reload configs and databases
+      /voteadm service list - List services
+      /voteadm service add <name> <url> <display> - Add service
+      /voteadm service remove <name> - Remove service
+      /voteadm reward <player> [amount] - Trigger player reward
+      /voteadm firework <player> [amount] - Give firework
+      /voteadm candy <player> [amount] - Give candy
+      /voteadm simulate <name> <service> - Simulate vote
+      /voteadm cleartimes <player> - Clear service validation times
+      /voteadm resetmonth - Reset the month
+permissions:
+  vote.vote:
+    description: Use /vote
+    default: op
+  vote.admin:
+    description: Use /votedmin
+    default: op
