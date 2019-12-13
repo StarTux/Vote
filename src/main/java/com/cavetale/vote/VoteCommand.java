@@ -34,6 +34,9 @@ public final class VoteCommand implements CommandExecutor {
             player.sendMessage("" + ChatColor.GRAY + ChatColor.ITALIC
                                + "Click to vote."
                                + " Each vote yields a randomized reward.");
+            player.sendMessage("" + ChatColor.GRAY + ChatColor.ITALIC
+                               + "Votes help us"
+                               + " get more players on the server.");
             player.sendMessage("");
             plugin.sendServiceLinks(player);
             player.sendMessage("");
