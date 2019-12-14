@@ -223,7 +223,8 @@ public final class VotePlugin extends JavaPlugin {
         long yesterday = now - DAY_SECONDS;
         ComponentBuilder cb;
         for (SQLService service : sqlServices) {
-            boolean has = session.getLastVoteEpoch(service.name) > yesterday;
+            long lastVote = session.getLastVoteEpoch(service.name);
+            boolean has = lastVote > yesterday;
             cb = new ComponentBuilder("  ");
             if (has) {
                 cb.append(ChatColor.WHITE + "["
@@ -232,8 +233,9 @@ public final class VotePlugin extends JavaPlugin {
             } else {
                 cb.append("[ ]").color(ChatColor.GRAY);
             }
-            cb.append(" ");
+            cb.append(" ").reset();
             cb.append(colorize(service.displayName)).color(ChatColor.YELLOW);
+            cb.insertion(service.url);
             if (!has) {
                 BaseComponent[] tooltip = TextComponent
                     .fromLegacyText("" + ChatColor.BLUE
@@ -241,10 +243,20 @@ public final class VotePlugin extends JavaPlugin {
                                     + service.url);
                 cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip));
                 cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
-                cb.insertion(service.url);
+            }
+            if (has) {
+                cb.append(" ").reset();
+                long ago = now - lastVote;
+                cb.append(agoFormat(ago)).color(ChatColor.GRAY).italic(true);
             }
             player.spigot().sendMessage(cb.create());
         }
+    }
+
+    String agoFormat(long seconds) {
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        return String.format("(%02d:%02d ago)", hours % 60, minutes % 60);
     }
 
     void checkTime() {
