@@ -270,19 +270,25 @@ public final class VotePlugin extends JavaPlugin {
         List<SQLPlayer> rows = new ArrayList<>(sqlPlayers.values());
         Collections.sort(rows, SQLPlayer.HIGHSCORE);
         boolean king = false;
+        String kingName = null;
         for (SQLPlayer row : sqlPlayers.values()) {
             row.monthlyVotes = 0;
             if (!king && !GenericEvents.playerHasPermission(row.uuid, "vote.admin")) {
                 king = true;
                 row.tag.voteKing = true;
-                String name = GenericEvents.cachedPlayerName(row.uuid);
-                getLogger().info("New vote king: " + name + ".");
+                kingName = GenericEvents.cachedPlayerName(row.uuid);
+                getLogger().info("New vote king: " + kingName + ".");
             } else {
                 row.tag.voteKing = false;
             }
             row.pack();
         }
         sql.saveAsync(rows, null);
+        if (kingName != null) {
+            String cmd = "titles unlockset " + kingName + " VoteKing";
+            getLogger().info("Issuing command: " + cmd);
+            getServer().dispatchCommand(getServer().getConsoleSender(), cmd);
+        }
     }
 
     void checkStoredRewards(UUID uuid) {
