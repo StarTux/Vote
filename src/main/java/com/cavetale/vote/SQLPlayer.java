@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -29,8 +30,17 @@ public final class SQLPlayer {
     String json;
     transient Tag tag;
 
+    static final Comparator<SQLPlayer> HIGHSCORE = (a, b) -> {
+        int res = Integer.compare(b.monthlyVotes,
+                                  a.monthlyVotes);
+        if (res != 0) return res;
+        return Integer.compare(b.allTimeVotes,
+                               a.allTimeVotes);
+    };
+
     static final class Tag {
         Map<String, Long> lastVotes = new HashMap<>(); // <Service, Epoch>
+        boolean voteKing; //
     }
 
     public SQLPlayer() { }

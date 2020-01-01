@@ -7,6 +7,7 @@ import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -266,10 +267,22 @@ public final class VotePlugin extends JavaPlugin {
         json.save(STATE_PATH, state, true);
         getLogger().info("Rolling over the month: " + oldMonth
                          + " -> " + state.currentMonth);
+        List<SQLPlayer> rows = new ArrayList<>(sqlPlayers.values());
+        Collections.sort(rows, SQLPlayer.HIGHSCORE);
+        boolean king = false;
         for (SQLPlayer row : sqlPlayers.values()) {
             row.monthlyVotes = 0;
+            if (!king && !GenericEvents.playerHasPermission(row.uuid, "vote.admin")) {
+                king = true;
+                row.tag.voteKing = true;
+                String name = GenericEvents.cachedPlayerName(row.uuid);
+                getLogger().info("New vote king: " + name + ".");
+            } else {
+                row.tag.voteKing = false;
+            }
+            row.pack();
         }
-        sql.saveAsync(new ArrayList<>(sqlPlayers.values()), null);
+        sql.saveAsync(rows, null);
     }
 
     void checkStoredRewards(UUID uuid) {
@@ -285,5 +298,9 @@ public final class VotePlugin extends JavaPlugin {
         session.storedRewards = 0;
         save(session);
         giveReward(player, amount);
+    }
+
+    double rnd() {
+        return random.nextBoolean() ? random.nextDouble() : -random.nextDouble();
     }
 }

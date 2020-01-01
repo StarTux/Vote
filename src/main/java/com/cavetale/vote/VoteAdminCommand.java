@@ -1,8 +1,10 @@
 package com.cavetale.vote;
 
 import com.vexsoftware.votifier.model.Vote;
+import com.winthier.generic_events.GenericEvents;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,6 +32,7 @@ public final class VoteAdminCommand implements CommandExecutor {
         case "simulate": return simulateCommand(sender, argl);
         case "cleartimes": return clearTimesCommand(sender, argl);
         case "resetmonth": return resetMonthCommand(sender, argl);
+        case "king": return voteKingCommand(sender, argl);
         default: return false;
         }
     }
@@ -189,6 +192,25 @@ public final class VoteAdminCommand implements CommandExecutor {
         sender.sendMessage("Triggering a month reset...");
         plugin.state.nextResetTime = 0L;
         plugin.checkTime();
+        return true;
+    }
+
+    boolean voteKingCommand(CommandSender sender, String[] args) {
+        if (args.length != 1) return false;
+        String name = args[0];
+        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        if (uuid == null) {
+            sender.sendMessage("Player not found: " + name);
+            return true;
+        }
+        SQLPlayer session = plugin.sqlPlayerOf(uuid);
+        session.tag.voteKing = !session.tag.voteKing;
+        plugin.save(session);
+        if (session.tag.voteKing) {
+            sender.sendMessage("Player was made Vote King: " + name);
+        } else {
+            sender.sendMessage("Player lost Vote King status: " + name);
+        }
         return true;
     }
 }

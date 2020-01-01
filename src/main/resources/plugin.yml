@@ -15,6 +15,7 @@ commands:
     usage: |-
       /vote - General information
       /vote hi - Monthly highscore
+      /vote firework - Launch fireworks
   voteadmin:
     aliases: [voteadm]
     description: Vote Command
@@ -35,5 +36,5 @@ permissions:
     description: Use /vote
     default: op
   vote.admin:
-    description: Use /votedmin
+    description: Use /votedmin and skip vote king
     default: op
