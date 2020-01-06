@@ -29,6 +29,7 @@ commands:
       /voteadm firework <player> [amount] - Give firework
       /voteadm candy <player> [amount] - Give candy
       /voteadm addvotes <player> [amount] - Add votes (and rewards) to player
+      /voteadm addtotal <player> [amount] - Adjust total votes
       /voteadm simulate <name> <service> - Simulate vote
       /voteadm cleartimes <player> - Clear service validation times
       /voteadm resetmonth - Reset the month

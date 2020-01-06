@@ -34,6 +34,7 @@ public final class VoteAdminCommand implements CommandExecutor {
         case "resetmonth": return resetMonthCommand(sender, argl);
         case "king": return voteKingCommand(sender, argl);
         case "addvotes": return addVotesCommand(sender, argl);
+        case "addtotal": return addTotalCommand(sender, argl);
         default: return false;
         }
     }
@@ -234,6 +235,29 @@ public final class VoteAdminCommand implements CommandExecutor {
         SQLPlayer session = plugin.sqlPlayerOf(uuid);
         plugin.addVotes(session, amount);
         sender.sendMessage("Added " + amount + " vote(s) to " + name + ".");
+        return true;
+    }
+
+    boolean addTotalCommand(CommandSender sender, String[] args) {
+        if (args.length < 1 || args.length > 2) return false;
+        String name = args[0];
+        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        if (uuid == null) {
+            sender.sendMessage("Player not found: " + name);
+            return true;
+        }
+        int amount = 1;
+        if (args.length >= 2) {
+            try {
+                amount = Integer.parseInt(args[1]);
+            } catch (NumberFormatException nfe) {
+                return false;
+            }
+        }
+        SQLPlayer session = plugin.sqlPlayerOf(uuid);
+        session.allTimeVotes += amount;
+        plugin.save(session);
+        sender.sendMessage("Adjusted total votes of " + name + " by " + amount + ".");
         return true;
     }
 }
