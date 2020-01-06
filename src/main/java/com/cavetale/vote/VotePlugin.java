@@ -32,7 +32,7 @@ public final class VotePlugin extends JavaPlugin {
     SQLDatabase sql;
     EventListener eventListener = new EventListener(this);
     static Gson gson;
-    static final long DAY_SECONDS = 60L * 60L * 23L;
+    static final long DAY_SECONDS = 60L * 60L * 24L;
     Json json = new Json(this);
     Random random = new Random();
     // Rewards
@@ -65,10 +65,6 @@ public final class VotePlugin extends JavaPlugin {
             json.save(STATE_PATH, state, true);
         }
         getServer().getScheduler().runTaskTimer(this, this::checkTime, 1200L, 1200L);
-    }
-
-    @Override
-    public void onDisable() {
     }
 
     void loadDatabases() {
@@ -180,38 +176,48 @@ public final class VotePlugin extends JavaPlugin {
             name = username;
         }
         // Check validity (no other vote within 24h)
-        final boolean valid;
-        final SQLPlayer session;
+        final SQLPlayer session = uuid != null ? sqlPlayerOf(uuid) : null;
+        SQLService serviceRow = findService(service);
+        final boolean valid = session != null && serviceRow != null;
         long now = Instant.now().getEpochSecond();
-        if (uuid != null) {
-            session = sqlPlayerOf(uuid);
-            long yesterday = now - DAY_SECONDS;
-            long lastVote = session.getLastVoteEpoch(service);
-            valid = lastVote < yesterday;
-        } else {
-            session = null;
-            valid = false;
-        }
-        SQLLog log = new SQLLog(name, uuid, new Date(), valid,
+        SQLLog log = new SQLLog(name, uuid, new Date(now * 1000L), valid,
                                 service, address, timestamp);
         sql.saveAsync(log, null);
-        if (!valid) return false;
-        getLogger().info("Vote from " + name + " via " + service + ".");
+        getLogger().info("Vote from " + name + " via " + service + " valid=" + valid);
+        if (!valid) return false; // Last exit
+        // Warn about mismatch
+        if (!session.canVote(service, now)) {
+            getLogger().warning("Vote timing mismatch: "
+                                + " service=" + service
+                                + " last=" + new Date(session.getLastVoteEpoch(service) * 1000L)
+                                + " now=" + new Date(now * 1000L)
+                                + " next=" + new Date(session.getNextVote(service)));
+        }
         session.setLastVoteEpoch(service, now);
-        session.monthlyVotes += 1;
-        session.allTimeVotes += 1;
-        final int totalRewards;
+        addVotes(session, 1); // Saves session implicitly
+        return true;
+    }
+
+    /**
+     * Saves session implicitly. Gives out rewards if player is online
+     * or adds to storedRewards.
+     */
+    void addVotes(SQLPlayer session, int amount) {
+        session.monthlyVotes += amount;
+        session.allTimeVotes += amount;
+        final int total;
+        final Player player = getServer().getPlayer(session.uuid);
         if (player != null) {
-            totalRewards = 1 + session.storedRewards;
+            total = amount + session.storedRewards;
             session.storedRewards = 0;
         } else {
-            totalRewards = 0;
-            session.storedRewards += 1;
+            total = 0;
+            session.storedRewards += amount;
         }
         save(session);
-        if (player == null) return true;
-        giveReward(player, totalRewards);
-        return true;
+        if (player != null && total > 0) {
+            giveReward(player, total);
+        }
     }
 
     static String colorize(String string) {
@@ -225,9 +231,9 @@ public final class VotePlugin extends JavaPlugin {
         ComponentBuilder cb;
         for (SQLService service : sqlServices) {
             long lastVote = session.getLastVoteEpoch(service.name);
-            boolean has = lastVote > yesterday;
+            boolean can = session.canVote(service.name, now);
             cb = new ComponentBuilder("  ");
-            if (has) {
+            if (!can) {
                 cb.append(ChatColor.WHITE + "["
                           + ChatColor.GOLD + "x"
                           + ChatColor.WHITE + "]");
@@ -237,18 +243,20 @@ public final class VotePlugin extends JavaPlugin {
             cb.append(" ").reset();
             cb.append(colorize(service.displayName)).color(ChatColor.YELLOW);
             cb.insertion(service.url);
-            if (!has) {
-                BaseComponent[] tooltip = TextComponent
-                    .fromLegacyText("" + ChatColor.BLUE
-                                    + ChatColor.UNDERLINE
-                                    + service.url);
-                cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip));
-                cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
-            }
-            if (has) {
+            BaseComponent[] tooltip = TextComponent
+                .fromLegacyText("" + ChatColor.BLUE
+                                + ChatColor.UNDERLINE
+                                + service.url);
+            cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip));
+            cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
+            if (lastVote > yesterday) {
                 cb.append(" ").reset();
                 long ago = now - lastVote;
                 cb.append(agoFormat(ago)).color(ChatColor.GRAY).italic(true);
+                if (player.isOp()) {
+                    // Debug stuff
+                    cb.append(" " + new Date(session.getNextVote(service.name) * 1000L));
+                }
             }
             player.spigot().sendMessage(cb.create());
         }

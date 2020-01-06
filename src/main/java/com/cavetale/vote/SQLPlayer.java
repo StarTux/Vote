@@ -29,6 +29,8 @@ public final class SQLPlayer {
     @Column(nullable = true, length = 2048)
     String json;
     transient Tag tag;
+    static final long HOUR = 60L * 60L;
+    static final long DAY = 60L * 60L * 24L;
 
     static final Comparator<SQLPlayer> HIGHSCORE = (a, b) -> {
         int res = Integer.compare(b.monthlyVotes,
@@ -73,5 +75,31 @@ public final class SQLPlayer {
 
     void setLastVoteEpoch(@NonNull String service, long epoch) {
         tag.lastVotes.put(service, epoch);
+    }
+
+    /**
+     * @return Epoch (seconds)
+     */
+    long getNextVote(@NonNull String serviceName) {
+        long last = getLastVoteEpoch(serviceName);
+        if (last == 0) return 0;
+        switch (serviceName) {
+        case "PlanetMinecraft.com":
+            return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
+        case "MCSL": // minecraft-server-list.com
+            return last + HOUR * 24; // Seems to round up to full hour(?)
+        case "MinecraftServers.org":
+            return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
+        case "TopG.org":
+            return last + 24 * HOUR;
+        case "Minecraft-MP.com":
+            return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
+        default:
+            return (last / DAY + 1) * DAY;
+        }
+    }
+
+    boolean canVote(@NonNull String serviceName, final long now) {
+        return getNextVote(serviceName) <= now;
     }
 }

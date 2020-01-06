@@ -33,6 +33,7 @@ public final class VoteAdminCommand implements CommandExecutor {
         case "cleartimes": return clearTimesCommand(sender, argl);
         case "resetmonth": return resetMonthCommand(sender, argl);
         case "king": return voteKingCommand(sender, argl);
+        case "addvotes": return addVotesCommand(sender, argl);
         default: return false;
         }
     }
@@ -211,6 +212,28 @@ public final class VoteAdminCommand implements CommandExecutor {
         } else {
             sender.sendMessage("Player lost Vote King status: " + name);
         }
+        return true;
+    }
+
+    boolean addVotesCommand(CommandSender sender, String[] args) {
+        if (args.length < 1 || args.length > 2) return false;
+        String name = args[0];
+        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        if (uuid == null) {
+            sender.sendMessage("Player not found: " + name);
+            return true;
+        }
+        int amount = 1;
+        if (args.length >= 2) {
+            try {
+                amount = Integer.parseInt(args[1]);
+            } catch (NumberFormatException nfe) {
+                return false;
+            }
+        }
+        SQLPlayer session = plugin.sqlPlayerOf(uuid);
+        plugin.addVotes(session, amount);
+        sender.sendMessage("Added " + amount + " vote(s) to " + name + ".");
         return true;
     }
 }
