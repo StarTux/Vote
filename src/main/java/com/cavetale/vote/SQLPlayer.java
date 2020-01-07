@@ -93,7 +93,7 @@ public final class SQLPlayer {
         case "TopG.org":
             return last + 24 * HOUR;
         case "Minecraft-MP.com":
-            return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
+            return (last / DAY + 1) * DAY + 5 * HOUR;
         default:
             return (last / DAY + 1) * DAY;
         }
