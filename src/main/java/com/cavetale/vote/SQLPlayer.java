@@ -91,7 +91,7 @@ public final class SQLPlayer {
         case "MinecraftServers.org":
             return ((last - 1) / HOUR + 25) * HOUR;
         case "TopG.org":
-            return ((last - 1) / HOUR + 25) * HOUR;
+            return ((last - 1) / HOUR + 12) * HOUR;
         case "Minecraft-MP.com":
             return (last / DAY + 1) * DAY + 5 * HOUR;
         default:
