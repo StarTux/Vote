@@ -234,14 +234,15 @@ public final class VotePlugin extends JavaPlugin {
             boolean can = session.canVote(service.name, now);
             cb = new ComponentBuilder("  ");
             if (!can) {
-                cb.append(ChatColor.WHITE + "["
-                          + ChatColor.GOLD + "x"
-                          + ChatColor.WHITE + "]");
+                cb.append(ChatColor.WHITE + "("
+                          + ChatColor.GREEN + "\u2714"
+                          + ChatColor.WHITE + ")");
             } else {
-                cb.append("[ ]").color(ChatColor.GRAY);
+                cb.append("(  )").color(ChatColor.GRAY);
             }
             cb.append(" ").reset();
-            cb.append(colorize(service.displayName)).color(ChatColor.YELLOW);
+            cb.append(colorize(service.displayName));
+            cb.color(can ? ChatColor.YELLOW : ChatColor.GRAY);
             cb.insertion(service.url);
             BaseComponent[] tooltip = TextComponent
                 .fromLegacyText("" + ChatColor.BLUE
@@ -251,21 +252,18 @@ public final class VotePlugin extends JavaPlugin {
             cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
             if (lastVote > yesterday) {
                 cb.append(" ").reset();
-                long ago = now - lastVote;
-                cb.append(agoFormat(ago)).color(ChatColor.GRAY).italic(true);
-                if (player.isOp()) {
-                    // Debug stuff
-                    cb.append(" " + new Date(session.getNextVote(service.name) * 1000L));
-                }
+                long next = session.getNextVote(service.name);
+                cb.append("(in " + timeFormat(next - now) + ")")
+                    .color(ChatColor.GRAY).italic(true);
             }
             player.spigot().sendMessage(cb.create());
         }
     }
 
-    String agoFormat(long seconds) {
+    String timeFormat(long seconds) {
         long minutes = seconds / 60;
         long hours = minutes / 60;
-        return String.format("(%02d:%02d ago)", hours % 60, minutes % 60);
+        return String.format("%02d:%02d", hours % 60, minutes % 60);
     }
 
     void checkTime() {
