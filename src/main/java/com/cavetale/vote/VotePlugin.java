@@ -250,7 +250,7 @@ public final class VotePlugin extends JavaPlugin {
                                 + service.url);
             cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip));
             cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
-            if (lastVote > yesterday) {
+            if (!can) {
                 cb.append(" ").reset();
                 long next = session.getNextVote(service.name);
                 cb.append("(in " + timeFormat(next - now) + ")")
