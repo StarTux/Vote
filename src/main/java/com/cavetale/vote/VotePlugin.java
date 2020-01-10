@@ -191,7 +191,7 @@ public final class VotePlugin extends JavaPlugin {
                                 + " service=" + service
                                 + " last=" + new Date(session.getLastVoteEpoch(service) * 1000L)
                                 + " now=" + new Date(now * 1000L)
-                                + " next=" + new Date(session.getNextVote(service)));
+                                + " next=" + new Date(session.getNextVote(service) * 1000L));
         }
         session.setLastVoteEpoch(service, now);
         addVotes(session, 1); // Saves session implicitly

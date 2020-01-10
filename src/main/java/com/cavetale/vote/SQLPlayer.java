@@ -87,7 +87,7 @@ public final class SQLPlayer {
         case "PlanetMinecraft.com":
             return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
         case "MCSL": // minecraft-server-list.com
-            return ((last - 1) / HOUR + 25) * HOUR;
+            return last + 24 * HOUR;
         case "MinecraftServers.org":
             return ((last - 1) / HOUR + 25) * HOUR;
         case "TopG.org":
