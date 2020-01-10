@@ -89,7 +89,7 @@ public final class SQLPlayer {
         case "MCSL": // minecraft-server-list.com
             return last + 24 * HOUR;
         case "MinecraftServers.org":
-            return ((last - 1) / HOUR + 25) * HOUR;
+            return last + 24 * HOUR;
         case "TopG.org":
             return last + 12 * HOUR;
         case "Minecraft-MP.com":

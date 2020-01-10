@@ -187,7 +187,7 @@ public final class VotePlugin extends JavaPlugin {
         if (!valid) return false; // Last exit
         // Warn about mismatch
         if (!session.canVote(service, now)) {
-            getLogger().warning("Vote timing mismatch: "
+            getLogger().warning("Vote timing mismatch:"
                                 + " service=" + service
                                 + " last=" + new Date(session.getLastVoteEpoch(service) * 1000L)
                                 + " now=" + new Date(now * 1000L)
