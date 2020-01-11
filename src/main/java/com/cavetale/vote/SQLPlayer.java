@@ -85,13 +85,14 @@ public final class SQLPlayer {
         if (last == 0) return 0;
         switch (serviceName) {
         case "PlanetMinecraft.com":
-            return (last / DAY + 1) * DAY; // Daily. Probably inaccurate.
+            return (last / DAY + 1) * DAY
+                + 5 * HOUR; // Daily. Probably inaccurate.
         case "MCSL": // minecraft-server-list.com
             return last + 24 * HOUR;
         case "MinecraftServers.org":
             return last + 24 * HOUR;
         case "TopG.org":
-            return last + 12 * HOUR;
+            return last + 12 * HOUR; // Nailed it!
         case "Minecraft-MP.com":
             return (last / DAY + 1) * DAY + 5 * HOUR;
         default:
