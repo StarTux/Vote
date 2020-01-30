@@ -1,6 +1,5 @@
 package com.cavetale.vote;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -20,8 +19,8 @@ public final class SQLPlayer {
     Integer id;
     @Column(nullable = false)
     UUID uuid;
-    @Column(nullable = false)
-    int monthlyVotes = 0;
+    // @Column(nullable = false)
+    // int monthlyVotes = 0;
     @Column(nullable = false)
     int allTimeVotes = 0;
     @Column(nullable = false)
@@ -32,17 +31,8 @@ public final class SQLPlayer {
     static final long HOUR = 60L * 60L;
     static final long DAY = 60L * 60L * 24L;
 
-    static final Comparator<SQLPlayer> HIGHSCORE = (a, b) -> {
-        int res = Integer.compare(b.monthlyVotes,
-                                  a.monthlyVotes);
-        if (res != 0) return res;
-        return Integer.compare(b.allTimeVotes,
-                               a.allTimeVotes);
-    };
-
     static final class Tag {
         Map<String, Long> lastVotes = new HashMap<>(); // <Service, Epoch>
-        boolean voteKing; //
     }
 
     public SQLPlayer() { }
@@ -88,9 +78,9 @@ public final class SQLPlayer {
             return (last / DAY + 1) * DAY
                 + 5 * HOUR; // Daily. Probably inaccurate.
         case "MCSL": // minecraft-server-list.com
-            return last + 24 * HOUR;
+            return last + 24 * HOUR; // Way off!
         case "MinecraftServers.org":
-            return last + 24 * HOUR;
+            return last + 24 * HOUR; // Way off!
         case "TopG.org":
             return last + 12 * HOUR; // Nailed it!
         case "Minecraft-MP.com":

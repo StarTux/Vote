@@ -205,10 +205,12 @@ public final class VoteAdminCommand implements CommandExecutor {
             sender.sendMessage("Player not found: " + name);
             return true;
         }
-        SQLPlayer session = plugin.sqlPlayerOf(uuid);
-        session.tag.voteKing = !session.tag.voteKing;
-        plugin.save(session);
-        if (session.tag.voteKing) {
+        SQLMonthly row = plugin.sql.find(SQLMonthly.class)
+            .eq("uuid", uuid).findUnique();
+        if (row == null) row = new SQLMonthly(uuid);
+        row.voteKing = !row.voteKing;
+        plugin.sql.save(row);
+        if (row.voteKing) {
             sender.sendMessage("Player was made Vote King: " + name);
         } else {
             sender.sendMessage("Player lost Vote King status: " + name);

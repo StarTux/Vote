@@ -7,7 +7,6 @@ import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +51,10 @@ public final class VotePlugin extends JavaPlugin {
     public void onEnable() {
         gson = new Gson();
         sql = new SQLDatabase(this);
-        sql.registerTables(SQLLog.class, SQLPlayer.class, SQLService.class);
+        sql.registerTables(SQLLog.class,
+                           SQLPlayer.class,
+                           SQLMonthly.class,
+                           SQLService.class);
         sql.createAllTables();
         getServer().getPluginManager().registerEvents(eventListener, this);
         getCommand("voteadmin").setExecutor(adminCommand);
@@ -203,7 +205,12 @@ public final class VotePlugin extends JavaPlugin {
      * or adds to storedRewards.
      */
     void addVotes(SQLPlayer session, int amount) {
-        session.monthlyVotes += amount;
+        String tableName = sql.getTable(SQLMonthly.class).getTableName();
+        String statement = "INSERT INTO `" + tableName + "`"
+            + " (`uuid`, `votes`, `vote_king`)"
+            + " VALUES ('" + session.uuid + "', " + amount + ", 0)"
+            + " ON DUPLICATE KEY UPDATE `votes` = `votes` + " + amount;
+        sql.executeUpdateAsync(statement, null);
         session.allTimeVotes += amount;
         final int total;
         final Player player = getServer().getPlayer(session.uuid);
@@ -273,24 +280,24 @@ public final class VotePlugin extends JavaPlugin {
         json.save(STATE_PATH, state, true);
         getLogger().info("Rolling over the month: " + oldMonth
                          + " -> " + state.currentMonth);
-        List<SQLPlayer> rows = new ArrayList<>(sqlPlayers.values());
-        Collections.sort(rows, SQLPlayer.HIGHSCORE);
+        List<SQLMonthly> rows = sql.find(SQLMonthly.class)
+            .orderByDescending("votes").findList();
         boolean king = false;
+        UUID kingUuid = null;
         String kingName = null;
-        for (SQLPlayer row : sqlPlayers.values()) {
-            row.monthlyVotes = 0;
+        for (SQLMonthly row : rows) {
             if (!king && !GenericEvents.playerHasPermission(row.uuid, "vote.admin")) {
                 king = true;
-                row.tag.voteKing = true;
+                kingUuid = row.uuid;
                 kingName = GenericEvents.cachedPlayerName(row.uuid);
                 getLogger().info("New vote king: " + kingName + ".");
-            } else {
-                row.tag.voteKing = false;
             }
-            row.pack();
         }
-        sql.saveAsync(rows, null);
-        if (kingName != null) {
+        sql.find(SQLMonthly.class).delete();
+        if (kingUuid != null) {
+            SQLMonthly row = new SQLMonthly(kingUuid);
+            row.voteKing = true;
+            sql.save(row);
             String cmd = "titles unlockset " + kingName + " VoteKing";
             getLogger().info("Issuing command: " + cmd);
             getServer().dispatchCommand(getServer().getConsoleSender(), cmd);
