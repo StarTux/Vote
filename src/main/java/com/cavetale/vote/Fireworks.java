@@ -96,7 +96,6 @@ final class Fireworks {
             return false;
         }
         long time = world.getTime();
-        if (time < 13000L || time >= 23000L) world.setTime(13000L);
         int amount = 1 + showTicks / 400;
         FireworkEffect.Type type = randomFireworkEffectType();
         for (int i = 0; i < amount; i += 1) {
