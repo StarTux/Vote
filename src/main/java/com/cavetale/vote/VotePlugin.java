@@ -180,7 +180,7 @@ public final class VotePlugin extends JavaPlugin {
         // Check validity (no other vote within 24h)
         final SQLPlayer session = uuid != null ? sqlPlayerOf(uuid) : null;
         SQLService serviceRow = findService(service);
-        final boolean valid = session != null && serviceRow != null;
+        final boolean valid = session != null && serviceRow != null && serviceRow.enabled;
         long now = Instant.now().getEpochSecond();
         SQLLog log = new SQLLog(name, uuid, new Date(now * 1000L), valid,
                                 service, address, timestamp);
@@ -237,6 +237,7 @@ public final class VotePlugin extends JavaPlugin {
         long yesterday = now - DAY_SECONDS;
         ComponentBuilder cb;
         for (SQLService service : sqlServices) {
+            if (!service.enabled) continue;
             long lastVote = session.getLastVoteEpoch(service.name);
             boolean can = session.canVote(service.name, now);
             cb = new ComponentBuilder("  ");

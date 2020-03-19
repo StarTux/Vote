@@ -18,6 +18,8 @@ public final class SQLService {
     String displayName;
     @Column(nullable = false)
     String url;
+    @Column
+    boolean enabled;
 
     public SQLService() { }
 
@@ -27,5 +29,6 @@ public final class SQLService {
         this.name = name;
         this.displayName = displayName;
         this.url = url;
+        enabled = true;
     }
 }
