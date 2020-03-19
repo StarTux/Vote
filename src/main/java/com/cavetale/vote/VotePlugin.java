@@ -286,13 +286,12 @@ public final class VotePlugin extends JavaPlugin {
         boolean king = false;
         UUID kingUuid = null;
         String kingName = null;
-        for (SQLMonthly row : rows) {
-            if (!king && !GenericEvents.playerHasPermission(row.uuid, "vote.admin")) {
-                king = true;
-                kingUuid = row.uuid;
-                kingName = GenericEvents.cachedPlayerName(row.uuid);
-                getLogger().info("New vote king: " + kingName + ".");
-            }
+        SQLMonthly kingRow = rows.isEmpty() ? null : rows.get(0);
+        if (kingRow != null) {
+            king = true;
+            kingUuid = kingRow.uuid;
+            kingName = GenericEvents.cachedPlayerName(kingRow.uuid);
+            getLogger().info("New vote king: " + kingName + ".");
         }
         sql.find(SQLMonthly.class).delete();
         if (kingUuid != null) {
