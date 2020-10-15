@@ -20,6 +20,8 @@ public final class SQLService {
     String url;
     @Column
     boolean enabled;
+    @Column(nullable = false)
+    int priority = 0;
 
     public SQLService() { }
 

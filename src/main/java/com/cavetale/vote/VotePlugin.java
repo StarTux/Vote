@@ -7,6 +7,7 @@ import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -79,6 +80,7 @@ public final class VotePlugin extends JavaPlugin {
         for (SQLService row : sql.find(SQLService.class).findList()) {
             sqlServices.add(row);
         }
+        Collections.sort(sqlServices, (b, a) -> Integer.compare(a.getPriority(), b.getPriority()));
     }
 
     SQLPlayer sqlPlayerOf(@NonNull UUID uuid) {
