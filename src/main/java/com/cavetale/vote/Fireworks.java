@@ -1,6 +1,6 @@
 package com.cavetale.vote;
 
-import com.cavetale.worldmarker.ItemMarker;
+import com.cavetale.worldmarker.item.ItemMarker;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;

@@ -1,6 +1,6 @@
 package com.cavetale.vote;
 
-import com.cavetale.worldmarker.ItemMarker;
+import com.cavetale.worldmarker.item.ItemMarker;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
