@@ -27,8 +27,6 @@ public final class VoteAdminCommand implements CommandExecutor {
         case "service": case "services":
             return serviceCommand(sender, argl);
         case "reward": return rewardCommand(sender, argl);
-        case "firework": return fireworkCommand(sender, argl);
-        case "candy": return candyCommand(sender, argl);
         case "simulate": return simulateCommand(sender, argl);
         case "cleartimes": return clearTimesCommand(sender, argl);
         case "resetmonth": return resetMonthCommand(sender, argl);
@@ -64,54 +62,6 @@ public final class VoteAdminCommand implements CommandExecutor {
         }
         plugin.giveReward(target, amount);
         sender.sendMessage("Reward x" + amount + " given to "
-                           + target.getName() + ".");
-        return true;
-    }
-
-    boolean fireworkCommand(CommandSender sender, String[] args) {
-        if (args.length < 1 || args.length > 2) return false;
-        Player target = plugin.getServer().getPlayerExact(args[0]);
-        if (target == null) {
-            sender.sendMessage("Player not found: " + args[0]);
-            return true;
-        }
-        int amount = 1;
-        if (args.length >= 2) {
-            try {
-                amount = Integer.parseInt(args[1]);
-            } catch (NumberFormatException nfe) {
-                return false;
-            }
-            if (amount < 1) return false;
-        }
-        for (int i = 0; i < amount; i += 1) {
-            plugin.fireworks.giveFirework(target);
-        }
-        sender.sendMessage("Firework x" + amount + " given to "
-                           + target.getName() + ".");
-        return true;
-    }
-
-    boolean candyCommand(CommandSender sender, String[] args) {
-        if (args.length < 1 || args.length > 2) return false;
-        Player target = plugin.getServer().getPlayerExact(args[0]);
-        if (target == null) {
-            sender.sendMessage("Player not found: " + args[0]);
-            return true;
-        }
-        int amount = 1;
-        if (args.length >= 2) {
-            try {
-                amount = Integer.parseInt(args[1]);
-            } catch (NumberFormatException nfe) {
-                return false;
-            }
-            if (amount < 1) return false;
-        }
-        for (int i = 0; i < amount; i += 1) {
-            plugin.candy.giveCandy(target);
-        }
-        sender.sendMessage("Candy x" + amount + " given to "
                            + target.getName() + ".");
         return true;
     }

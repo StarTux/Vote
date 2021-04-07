@@ -1,12 +1,12 @@
 package com.cavetale.vote;
 
+import com.cavetale.mytems.Mytems;
 import com.google.gson.Gson;
 import com.vexsoftware.votifier.model.Vote;
 import com.winthier.generic_events.GenericEvents;
 import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +24,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class VotePlugin extends JavaPlugin {
@@ -37,7 +36,6 @@ public final class VotePlugin extends JavaPlugin {
     Random random = new Random();
     // Rewards
     Fireworks fireworks = new Fireworks(this);
-    Candy candy = new Candy(this);
     // Databases
     final Map<UUID, SQLPlayer> sqlPlayers = new HashMap<>();
     final List<SQLService> sqlServices = new ArrayList<>();
@@ -115,11 +113,10 @@ public final class VotePlugin extends JavaPlugin {
 
     void giveReward(@NonNull Player player, final int amount) {
         for (int i = 0; i < amount; i += 1) {
-            // Simplified
             if (random.nextBoolean()) {
-                giveItem(player, candy.makeCandy(player));
+                Mytems.VOTE_CANDY.giveItemStack(player, 1);
             } else {
-                giveItem(player, fireworks.makeFirework(player));
+                Mytems.VOTE_FIREWORK.giveItemStack(player, 1);
             }
         }
         player.playSound(player.getEyeLocation(),
@@ -138,24 +135,6 @@ public final class VotePlugin extends JavaPlugin {
         for (Player target : getServer().getOnlinePlayers()) {
             target.spigot().sendMessage(cb.create());
         }
-    }
-
-    void giveItem(@NonNull Player player, @NonNull ItemStack item) {
-        for (ItemStack drop : player.getInventory().addItem(item).values()) {
-            player.getWorld().dropItem(player.getEyeLocation(), drop);
-        }
-    }
-
-    List<String> getThanksLore(@NonNull String name) {
-        return Arrays.
-            asList(ChatColor.WHITE + "Thank you for voting, "
-                   + ChatColor.GOLD + name
-                   + ChatColor.WHITE + "!",
-                   ChatColor.WHITE + "Your vote helps us get more",
-                   ChatColor.WHITE + "players on the server.",
-                   "",
-                   ChatColor.WHITE + "Sincerely, "
-                   + ChatColor.GRAY + ChatColor.ITALIC + "cavetale.com");
     }
 
     boolean onVote(@NonNull Vote vote) {
