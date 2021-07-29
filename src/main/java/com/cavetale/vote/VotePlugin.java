@@ -3,7 +3,7 @@ package com.cavetale.vote;
 import com.cavetale.mytems.Mytems;
 import com.google.gson.Gson;
 import com.vexsoftware.votifier.model.Vote;
-import com.winthier.generic_events.GenericEvents;
+import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -148,12 +148,12 @@ public final class VotePlugin extends JavaPlugin {
         final Player player = getServer().getPlayerExact(username);
         final UUID uuid = player != null
             ? player.getUniqueId()
-            : GenericEvents.cachedPlayerUuid(username);
+            : PlayerCache.uuidForName(username);
         final String name;
         if (player != null) {
             name = player.getName();
         } else if (uuid != null) {
-            String tmp = GenericEvents.cachedPlayerName(uuid);
+            String tmp = PlayerCache.nameForUuid(uuid);
             name = tmp != null ? tmp : username;
         } else {
             name = username;
@@ -271,7 +271,7 @@ public final class VotePlugin extends JavaPlugin {
         if (kingRow != null) {
             king = true;
             kingUuid = kingRow.uuid;
-            kingName = GenericEvents.cachedPlayerName(kingRow.uuid);
+            kingName = PlayerCache.nameForUuid(kingRow.uuid);
             getLogger().info("New vote king: " + kingName + ".");
         }
         sql.find(SQLMonthly.class).delete();

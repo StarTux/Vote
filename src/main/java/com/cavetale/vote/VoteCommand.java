@@ -1,6 +1,6 @@
 package com.cavetale.vote;
 
-import com.winthier.generic_events.GenericEvents;
+import com.winthier.playercache.PlayerCache;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,7 +117,7 @@ public final class VoteCommand implements TabExecutor {
             if (rows.size() <= i) break;
             SQLMonthly row = rows.get(i);
             int rank = i + 1;
-            String name = GenericEvents.cachedPlayerName(row.uuid);
+            String name = PlayerCache.nameForUuid(row.uuid);
             if (name == null) name = "N/A";
             ChatColor c = row.voteKing ? ChatColor.GOLD : ChatColor.WHITE;
             player.sendMessage("" + ChatColor.GRAY + rank + ") "

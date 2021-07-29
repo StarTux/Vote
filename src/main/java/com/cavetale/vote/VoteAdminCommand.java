@@ -1,7 +1,7 @@
 package com.cavetale.vote;
 
 import com.vexsoftware.votifier.model.Vote;
-import com.winthier.generic_events.GenericEvents;
+import com.winthier.playercache.PlayerCache;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
@@ -150,7 +150,7 @@ public final class VoteAdminCommand implements CommandExecutor {
     boolean voteKingCommand(CommandSender sender, String[] args) {
         if (args.length != 1) return false;
         String name = args[0];
-        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        UUID uuid = PlayerCache.uuidForName(name);
         if (uuid == null) {
             sender.sendMessage("Player not found: " + name);
             return true;
@@ -171,7 +171,7 @@ public final class VoteAdminCommand implements CommandExecutor {
     boolean addVotesCommand(CommandSender sender, String[] args) {
         if (args.length < 1 || args.length > 2) return false;
         String name = args[0];
-        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        UUID uuid = PlayerCache.uuidForName(name);
         if (uuid == null) {
             sender.sendMessage("Player not found: " + name);
             return true;
@@ -193,7 +193,7 @@ public final class VoteAdminCommand implements CommandExecutor {
     boolean addTotalCommand(CommandSender sender, String[] args) {
         if (args.length < 1 || args.length > 2) return false;
         String name = args[0];
-        UUID uuid = GenericEvents.cachedPlayerUuid(name);
+        UUID uuid = PlayerCache.uuidForName(name);
         if (uuid == null) {
             sender.sendMessage("Player not found: " + name);
             return true;
