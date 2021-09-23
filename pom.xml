@@ -22,7 +22,6 @@
         <version>2.22.0</version>
       </plugin>
 
-      <!-- Java 8 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -56,18 +55,18 @@
 
     <!-- NuVotifier Repo -->
     <repository>
-      <id>bintray-repo</id>
-      <url>https://dl.bintray.com/nuvotifier/maven/</url>
-    </repository>    
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
 
   </repositories>
   <dependencies>
 
     <!-- Paper API -->
     <dependency>
-      <groupId>com.destroystokyo.paper</groupId>
+      <groupId>io.papermc.paper</groupId>
       <artifactId>paper-api</artifactId>
-      <version>1.16.5-R0.1-SNAPSHOT</version>
+      <version>1.17.1-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
@@ -105,9 +104,9 @@
 
     <!-- NuVotifier -->
     <dependency>
-      <groupId>com.vexsoftware</groupId>
-      <artifactId>nuvotifier-universal</artifactId>
-      <version>2.3.4</version>
+      <groupId>com.github.nuvotifier.NuVotifier</groupId>
+      <artifactId>nuvotifier-bukkit</artifactId>
+      <version>2.6.0</version>
       <scope>provided</scope>
     </dependency>
 

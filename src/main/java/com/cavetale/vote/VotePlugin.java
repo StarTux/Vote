@@ -15,12 +15,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import lombok.NonNull;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -112,28 +114,31 @@ public final class VotePlugin extends JavaPlugin {
     }
 
     void giveReward(@NonNull Player player, final int amount) {
+        TextComponent.Builder announcement = Component.text().color(NamedTextColor.WHITE)
+            .clickEvent(ClickEvent.runCommand("/vote"))
+            .hoverEvent(HoverEvent.showText(Component.text("/vote", NamedTextColor.GREEN)));
         for (int i = 0; i < amount; i += 1) {
-            if (random.nextBoolean()) {
-                Mytems.VOTE_CANDY.giveItemStack(player, 1);
-            } else {
-                Mytems.VOTE_FIREWORK.giveItemStack(player, 1);
-            }
+            Mytems mytems = random.nextBoolean()
+                ? Mytems.VOTE_CANDY
+                : Mytems.VOTE_FIREWORK;
+            mytems.giveItemStack(player, 1);
+            announcement.append(mytems.component);
         }
         player.playSound(player.getEyeLocation(),
                          Sound.ENTITY_PLAYER_LEVELUP,
                          SoundCategory.MASTER,
                          0.25f, 2.0f);
-        ChatColor c = ChatColor.WHITE;
-        String ann = amount > 1
-            ? player.getName() + " received a reward. Thanks for voting "
-            + ChatColor.BLUE + amount + c + " times!"
-            : player.getName() + " received a reward. Thanks for voting!";
-        ComponentBuilder cb = new ComponentBuilder(ann).color(c);
-        cb.event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vote"));
-        cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                TextComponent.fromLegacyText(c + "/vote")));
+        if (amount > 1) {
+            announcement
+                .append(Component.text(" " + player.getName() + " received a reward. Thanks for voting "))
+                .append(Component.text("" + amount, NamedTextColor.BLUE))
+                .append(Component.text(" times!"));
+        } else {
+            announcement
+                .append(Component.text(" " + player.getName() + " received a reward. Thanks for voting!"));
+        }
         for (Player target : getServer().getOnlinePlayers()) {
-            target.spigot().sendMessage(cb.create());
+            target.sendMessage(announcement);
         }
     }
 
@@ -216,37 +221,33 @@ public final class VotePlugin extends JavaPlugin {
         SQLPlayer session = sqlPlayerOf(player);
         long now = Instant.now().getEpochSecond();
         long yesterday = now - DAY_SECONDS;
-        ComponentBuilder cb;
+        List<ComponentLike> lines = new ArrayList<>();
         for (SQLService service : sqlServices) {
             if (!service.enabled) continue;
             long lastVote = session.getLastVoteEpoch(service.name);
             boolean can = session.canVote(service.name, now);
-            cb = new ComponentBuilder("  ");
+            TextComponent.Builder line = Component.text().content("  ");
             if (!can) {
-                cb.append(ChatColor.WHITE + "("
-                          + ChatColor.GREEN + "\u2714"
-                          + ChatColor.WHITE + ")");
+                line.append(Component.text().color(NamedTextColor.WHITE)
+                            .content("(")
+                            .append(Component.text("\u2714", NamedTextColor.GREEN))
+                            .append(Component.text(")")));
             } else {
-                cb.append("(  )").color(ChatColor.GRAY);
+                line.append(Component.text("(  )", NamedTextColor.GRAY));
             }
-            cb.append(" ").reset();
-            cb.append(colorize(service.displayName));
-            cb.color(can ? ChatColor.YELLOW : ChatColor.GRAY);
-            cb.insertion(service.url);
-            BaseComponent[] tooltip = TextComponent
-                .fromLegacyText("" + ChatColor.BLUE
-                                + ChatColor.UNDERLINE
-                                + service.url);
-            cb.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip));
-            cb.event(new ClickEvent(ClickEvent.Action.OPEN_URL, service.url));
+            line.append(Component.space());
+            line.append(Component.text(colorize(service.displayName), (can ? NamedTextColor.YELLOW : NamedTextColor.GRAY)));
+            line.insertion(service.url);
+            line.hoverEvent(HoverEvent.showText(Component.text(service.url, NamedTextColor.BLUE, TextDecoration.UNDERLINED)));
+            line.clickEvent(ClickEvent.openUrl(service.url));
             if (!can) {
-                cb.append(" ").reset();
+                line.append(Component.space());
                 long next = session.getNextVote(service.name);
-                cb.append("(in " + timeFormat(next - now) + ")")
-                    .color(ChatColor.GRAY).italic(true);
+                line.append(Component.text("(in " + timeFormat(next - now) + ")", NamedTextColor.GRAY, TextDecoration.ITALIC));
             }
-            player.spigot().sendMessage(cb.create());
+            lines.add(line);
         }
+        player.sendMessage(Component.join(Component.newline(), lines));
     }
 
     String timeFormat(long seconds) {
