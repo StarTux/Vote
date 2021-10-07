@@ -17,6 +17,7 @@ import java.util.UUID;
 import lombok.NonNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -247,7 +248,7 @@ public final class VotePlugin extends JavaPlugin {
             }
             lines.add(line);
         }
-        player.sendMessage(Component.join(Component.newline(), lines));
+        player.sendMessage(Component.join(JoinConfiguration.separator(Component.newline()), lines));
     }
 
     String timeFormat(long seconds) {
