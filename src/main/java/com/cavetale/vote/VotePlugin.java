@@ -6,6 +6,10 @@ import com.vexsoftware.votifier.model.Vote;
 import com.winthier.playercache.PlayerCache;
 import com.winthier.sql.SQLDatabase;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,9 +27,11 @@ import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,6 +54,8 @@ public final class VotePlugin extends JavaPlugin {
     // State
     static final String STATE_PATH = "state.json";
     State state;
+    private long lastSpawnWorldTime; // New years
+    private boolean newYearsLogged = false;
 
     @Override
     public void onEnable() {
@@ -69,6 +77,7 @@ public final class VotePlugin extends JavaPlugin {
             json.save(STATE_PATH, state, true);
         }
         getServer().getScheduler().runTaskTimer(this, this::checkTime, 1200L, 1200L);
+        getServer().getScheduler().runTaskTimer(this, this::checkNewYears, 0L, 20L * 5L);
     }
 
     void loadDatabases() {
@@ -255,6 +264,28 @@ public final class VotePlugin extends JavaPlugin {
         long minutes = seconds / 60;
         long hours = minutes / 60;
         return String.format("%02d:%02d", hours % 60, minutes % 60);
+    }
+
+    protected void checkNewYears() {
+        World spawnWorld = Bukkit.getWorld("spawn");
+        if (spawnWorld == null) return;
+        LocalDate localDate = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toLocalDate();
+        Month month = localDate.getMonth();
+        long day = localDate.getDayOfMonth();
+        if (!(month == Month.DECEMBER && day == 31) && !(month == Month.JANUARY && day == 1)) {
+            return;
+        }
+        if (!newYearsLogged) {
+            getLogger().info("We have determined it is time for the New Year's spawn firework!");
+            newYearsLogged = true;
+        }
+        long spawnWorldTime = spawnWorld.getTime();
+        final long midnight = 18000;
+        if (lastSpawnWorldTime < midnight && spawnWorldTime >= midnight) {
+            getLogger().info("Starting New Year's spawn midnight fireworks show");
+            fireworks.startShow();
+        }
+        lastSpawnWorldTime = spawnWorldTime;
     }
 
     void checkTime() {
