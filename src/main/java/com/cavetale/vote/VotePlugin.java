@@ -54,7 +54,7 @@ public final class VotePlugin extends JavaPlugin {
     // State
     static final String STATE_PATH = "state.json";
     State state;
-    private long lastSpawnWorldTime; // New years
+    private long lastSpawnWorldTime = -1; // New years
     private boolean newYearsLogged = false;
 
     @Override
@@ -281,7 +281,7 @@ public final class VotePlugin extends JavaPlugin {
         }
         long spawnWorldTime = spawnWorld.getTime();
         final long midnight = 18000;
-        if (lastSpawnWorldTime < midnight && spawnWorldTime >= midnight) {
+        if (lastSpawnWorldTime >= 0 && lastSpawnWorldTime < midnight && spawnWorldTime >= midnight) {
             getLogger().info("Starting New Year's spawn midnight fireworks show");
             fireworks.startShow();
         }
