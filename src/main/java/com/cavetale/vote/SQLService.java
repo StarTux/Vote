@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.winthier.sql.SQLRow;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,7 +10,7 @@ import lombok.Setter;
 
 @Table(name = "services")
 @Getter @Setter
-public final class SQLService {
+public final class SQLService implements SQLRow {
     @Id
     Integer id;
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.winthier.sql.SQLRow;
 import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -11,7 +12,7 @@ import lombok.Setter;
 
 @Table(name = "log")
 @Getter @Setter
-public final class SQLLog {
+public final class SQLLog implements SQLRow {
     @Id
     Integer id;
     @Column(nullable = false, length = 255)

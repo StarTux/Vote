@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.winthier.sql.SQLRow;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Table(name = "monthly",
        uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
 @Getter @Setter
-public final class SQLMonthly {
+public final class SQLMonthly implements SQLRow {
     @Id
     Integer id;
     @Column(nullable = false)

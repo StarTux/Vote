@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.winthier.sql.SQLRow;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @Table(name = "players",
        uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
 @Getter @Setter
-public final class SQLPlayer {
+public final class SQLPlayer implements SQLRow {
     @Id
     Integer id;
     @Column(nullable = false)
