@@ -6,12 +6,10 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Setter;
 
-@Table(name = "log")
-@Getter @Setter
+@Data @Table(name = "log")
 public final class SQLLog implements SQLRow {
     @Id
     Integer id;

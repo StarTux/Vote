@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.winthier.spawn.Spawn;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -12,17 +13,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 @RequiredArgsConstructor
 final class Fireworks {
-    final VotePlugin plugin;
-    BukkitRunnable showTask;
-    int showTicks;
+    private final VotePlugin plugin;
+    private BukkitRunnable showTask;
+    private int showTicks;
 
-    Color randomColor() {
+    private Color randomColor() {
         return Color.fromBGR(plugin.random.nextInt(256),
                              plugin.random.nextInt(256),
                              plugin.random.nextInt(256));
     }
 
-    public FireworkEffect.Type randomFireworkEffectType() {
+    private FireworkEffect.Type randomFireworkEffectType() {
         switch (plugin.random.nextInt(10)) {
         case 0: return FireworkEffect.Type.CREEPER;
         case 1: return FireworkEffect.Type.STAR;
@@ -33,11 +34,11 @@ final class Fireworks {
         }
     }
 
-    FireworkMeta randomFireworkMeta() {
+    private FireworkMeta randomFireworkMeta() {
         return randomFireworkMeta(randomFireworkEffectType());
     }
 
-    FireworkMeta randomFireworkMeta(FireworkEffect.Type type) {
+    private FireworkMeta randomFireworkMeta(FireworkEffect.Type type) {
         FireworkMeta meta = (FireworkMeta) plugin.getServer().getItemFactory()
             .getItemMeta(Material.FIREWORK_ROCKET);
         FireworkEffect.Builder builder = FireworkEffect.builder().with(type);
@@ -51,27 +52,20 @@ final class Fireworks {
         return meta;
     }
 
-    void onSpawn(Firework firework) {
-        firework.setFireworkMeta(randomFireworkMeta());
-    }
-
-    boolean showTick() {
+    private boolean showTick() {
         if (showTicks > 20 * 60) return false;
         showTicks += 1;
         if (showTicks % 20 != 1) return true;
-        World world = plugin.getServer().getWorld("spawn");
-        if (world == null) {
-            plugin.getLogger().warning("World not found: spawn");
-            return false;
-        }
+        Location location = Spawn.get();
+        World world = location.getWorld();
         long time = world.getTime();
         int amount = 1 + showTicks / 400;
         FireworkEffect.Type type = randomFireworkEffectType();
         for (int i = 0; i < amount; i += 1) {
-            Location loc = world.getSpawnLocation()
-                .add(plugin.rnd() * 16.0,
+            Location loc = location.clone()
+                .add(rnd() * 16.0,
                      16.0 + plugin.random.nextDouble() * 16,
-                     plugin.rnd() * 16.0);
+                     rnd() * 16.0);
             Firework entity = world.spawn(loc, Firework.class, e -> {
                     e.setFireworkMeta(randomFireworkMeta(type));
                     e.setSilent(true);
@@ -81,7 +75,7 @@ final class Fireworks {
         return true;
     }
 
-    boolean startShow() {
+    protected boolean startShow() {
         if (showTask != null && !showTask.isCancelled()) return false;
         showTicks = 0;
         showTask = new BukkitRunnable() {
@@ -95,5 +89,9 @@ final class Fireworks {
             };
         showTask.runTaskTimer(plugin, 1L, 1L);
         return true;
+    }
+
+    private double rnd() {
+        return plugin.random.nextBoolean() ? plugin.random.nextDouble() : -plugin.random.nextDouble();
     }
 }

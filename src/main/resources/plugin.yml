@@ -8,8 +8,8 @@ description: Vote Plugin
 author: StarTux
 website: https://cavetale.com
 
-depend: [SQL, PlayerCache, Votifier, Mytems]
-softdepend: []
+depend: [Core, SQL, PlayerCache, Mytems, Fam, Spawn]
+softdepend: [Votifier]
 
 commands:
 
@@ -27,18 +27,9 @@ commands:
     description: Vote Command
     permission: vote.admin
     usage: |-
-      /voteadm reload - Reload configs and databases
-      /voteadm service list - List services
-      /voteadm service add <name> <url> <display> - Add service
+      /voteadm service list - 
+      /voteadm service add 
       /voteadm service remove <name> - Remove service
-      /voteadm reward <player> [amount] - Trigger player reward
-      /voteadm firework <player> [amount] - Give firework
-      /voteadm candy <player> [amount] - Give candy
-      /voteadm addvotes <player> [amount] - Add votes (and rewards) to player
-      /voteadm addtotal <player> [amount] - Adjust total votes
-      /voteadm simulate <name> <service> - Simulate vote
-      /voteadm cleartimes <player> - Clear service validation times
-      /voteadm resetmonth - Reset the month
 
 permissions:
 

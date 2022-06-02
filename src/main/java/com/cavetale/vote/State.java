@@ -4,16 +4,18 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public final class State {
-    int currentMonth; // 1-12
-    long nextResetTime;
+    protected int currentYear = 2022;
+    protected int currentMonth = 6; // 1-12
+    protected long nextResetTime;
 
-    void setCurrentMonth() {
+    public void setCurrentMonth() {
         GregorianCalendar calendar = new GregorianCalendar();
         currentMonth = calendar.get(Calendar.MONTH) + 1;
+        currentYear = calendar.get(Calendar.YEAR);
         nextResetTime = calculateNextResetTime();
     }
 
-    long calculateNextResetTime() {
+    private long calculateNextResetTime() {
         GregorianCalendar calendar = new GregorianCalendar();
         int year = calendar.get(Calendar.YEAR);
         int month = currentMonth + 1;

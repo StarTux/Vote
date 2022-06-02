@@ -5,26 +5,26 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Table(name = "monthly",
-       uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-@Getter @Setter
+@Data @Table(name = "monthly")
 public final class SQLMonthly implements SQLRow {
     @Id
-    Integer id;
+    private Integer id;
+
+    @Column(nullable = false, unique = true)
+    private UUID uuid;
+
     @Column(nullable = false)
-    UUID uuid;
+    private int votes = 0;
+
     @Column(nullable = false)
-    int votes = 0;
-    @Column(nullable = false)
-    boolean voteKing;
+    private boolean voteKing;
 
     public SQLMonthly() { }
 
-    SQLMonthly(final UUID uuid) {
+    public SQLMonthly(final UUID uuid, final int votes) {
         this.uuid = uuid;
+        this.votes = votes;
     }
 }

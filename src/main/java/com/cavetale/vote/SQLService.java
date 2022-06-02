@@ -4,16 +4,14 @@ import com.winthier.sql.SQLRow;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.Setter;
 
-@Table(name = "services")
-@Getter @Setter
+@Data @Table(name = "services")
 public final class SQLService implements SQLRow {
     @Id
     Integer id;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 40, unique = true)
     String name;
     @Column(nullable = false)
     String displayName;
