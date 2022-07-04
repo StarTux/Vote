@@ -312,7 +312,7 @@ public final class VotePlugin extends JavaPlugin {
         cal.set(Calendar.MILLISECOND, 0);
         return Highscore.reward(scores,
                                 "vote_monthly",
-                                TrophyCategory.CUP,
+                                TrophyCategory.VOTE,
                                 text(txt, GOLD),
                                 hi -> ("You voted " + hi.score + " time" + (hi.score == 1 ? "" : "s")
                                        + " in the month of " + monthTxt + " " + year),
