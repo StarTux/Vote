@@ -63,7 +63,7 @@ public final class VotePlugin extends JavaPlugin {
         database.createAllTables();
         adminCommand.enable();
         getCommand("vote").setExecutor(voteCommand);
-        if (NetworkServer.current() == NetworkServer.CAVETALE) {
+        if (NetworkServer.current() == NetworkServer.HUB) {
             timer = new Timer(this);
             timer.enable();
             getLogger().info("Timer enabled");

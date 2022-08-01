@@ -35,8 +35,8 @@ final class Timer {
             state.setCurrentMonth();
             Json.save(file, state, true);
         }
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::checkTime, 1200L, 1200L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::checkNewYears, 0L, 20L * 5L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::checkTime, 1200L, 1200L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::checkNewYears, 0L, 20L * 5L);
     }
 
     protected void checkTime() {
