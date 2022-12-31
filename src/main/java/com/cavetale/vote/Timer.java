@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 
 @RequiredArgsConstructor
 final class Timer {
@@ -92,14 +91,11 @@ final class Timer {
         }
         final long hour = localDateTime.getHour();
         Bukkit.getScheduler().runTask(plugin, () -> {
-                World spawnWorld = Bukkit.getWorld("spawn");
-                if (spawnWorld == null) return;
                 if (!newYearsLogged) {
                     plugin.getLogger().info("We have determined it is time for the New Year's spawn firework!");
                     newYearsLogged = true;
                 }
-                long spawnWorldTime = spawnWorld.getTime();
-                if (lastHour >= 0 && lastHour < hour) {
+                if (lastHour >= 0 && lastHour != hour) {
                     plugin.getLogger().info("Starting New Year's spawn midnight fireworks show");
                     plugin.fireworks.startShow();
                 }

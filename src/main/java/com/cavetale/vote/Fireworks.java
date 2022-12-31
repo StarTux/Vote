@@ -1,5 +1,6 @@
 package com.cavetale.vote;
 
+import com.cavetale.core.connect.NetworkServer;
 import com.winthier.spawn.Spawn;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Color;
@@ -58,7 +59,10 @@ final class Fireworks {
         if (showTicks % 20 != 1) return true;
         Location location = Spawn.get();
         World world = location.getWorld();
-        long time = world.getTime();
+        if (NetworkServer.current() == NetworkServer.HUB) {
+            final long time = world.getTime();
+            if (time < 13000L || time >= 23000L) world.setTime(13000L);
+        }
         int amount = 1 + showTicks / 400;
         FireworkEffect.Type type = randomFireworkEffectType();
         for (int i = 0; i < amount; i += 1) {
