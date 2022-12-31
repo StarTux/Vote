@@ -22,7 +22,7 @@ final class Timer {
     private static final String STATE_PATH = "state.json";
     private final VotePlugin plugin;
     private State state;
-    private long lastSpawnWorldTime = -1; // New years
+    private long lastHour = -1; // New years
     private boolean newYearsLogged = false;
     private File file;
 
@@ -83,12 +83,14 @@ final class Timer {
     }
 
     protected void checkNewYears() {
-        LocalDate localDate = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).toLocalDate();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
+        LocalDate localDate = localDateTime.toLocalDate();
         Month month = localDate.getMonth();
         long day = localDate.getDayOfMonth();
         if (!(month == Month.DECEMBER && day == 31) && !(month == Month.JANUARY && day == 1)) {
             return;
         }
+        final long hour = localDateTime.getHour();
         Bukkit.getScheduler().runTask(plugin, () -> {
                 World spawnWorld = Bukkit.getWorld("spawn");
                 if (spawnWorld == null) return;
@@ -97,12 +99,11 @@ final class Timer {
                     newYearsLogged = true;
                 }
                 long spawnWorldTime = spawnWorld.getTime();
-                final long midnight = 18000;
-                if (lastSpawnWorldTime >= 0 && lastSpawnWorldTime < midnight && spawnWorldTime >= midnight) {
+                if (lastHour >= 0 && lastHour < hour) {
                     plugin.getLogger().info("Starting New Year's spawn midnight fireworks show");
                     plugin.fireworks.startShow();
                 }
-                lastSpawnWorldTime = spawnWorldTime;
+                lastHour = hour;
             });
     }
 }
