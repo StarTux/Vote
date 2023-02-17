@@ -37,6 +37,10 @@ permissions:
     description: Use /vote
     default: op
 
+  vote.reward:
+    description: Receive voting rewards
+    default: false
+
   vote.admin:
     description: Use /votedmin and skip vote king
     default: op

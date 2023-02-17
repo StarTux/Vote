@@ -281,6 +281,7 @@ public final class VotePlugin extends JavaPlugin {
     }
 
     protected void checkStoredRewards(Player player) {
+        if (!player.hasPermission("vote.reward")) return;
         if (!ServerCategory.current().isSurvival()) return;
         database.find(SQLPlayer.class)
             .eq("uuid", player.getUniqueId())
