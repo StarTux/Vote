@@ -170,7 +170,9 @@ public final class VotePlugin extends JavaPlugin {
     public void sendServiceLinks(Player player) {
         final UUID uuid = player.getUniqueId();
         database.scheduleAsyncTask(() -> {
-                List<SQLService> serviceRows = database.find(SQLService.class).findList();
+                final List<SQLService> serviceRows = database.find(SQLService.class)
+                    .orderByDescending("priority")
+                    .findList();
                 SQLPlayer playerRow = database.find(SQLPlayer.class).eq("uuid", uuid).findUnique();
                 SQLMonthly monthlyRow = database.find(SQLMonthly.class).eq("uuid", uuid).findUnique();
                 Map<String, SQLLastVote> lastVoteRows = new HashMap<>();
